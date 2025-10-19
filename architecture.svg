@@ -1,0 +1,162 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <!-- Title -->
+    <text x="600" y="30" font-size="24" font-weight="bold" text-anchor="middle" fill="#1a1a1a">
+      Project Samarth - System Architecture
+    </text>
+    
+    <!-- Layer 1: Data Sources -->
+    <rect x="50" y="60" width="1100" height="120" fill="#e8f4f8" stroke="#2E86AB" stroke-width="2" rx="10"/>
+    <text x="600" y="85" font-size="18" font-weight="bold" text-anchor="middle" fill="#2E86AB">
+      Layer 1: Data Sources (data.gov.in)
+    </text>
+    
+    <!-- Data boxes -->
+    <rect x="100" y="100" width="280" height="60" fill="#fff" stroke="#2E86AB" stroke-width="2" rx="5"/>
+    <text x="240" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Punjab Rainfall Data</text>
+    <text x="240" y="145" font-size="12" text-anchor="middle" fill="#666">IMD (1970-2021)</text>
+    
+    <rect x="460" y="100" width="280" height="60" fill="#fff" stroke="#2E86AB" stroke-width="2" rx="5"/>
+    <text x="600" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Rice Production</text>
+    <text x="600" y="145" font-size="12" text-anchor="middle" fill="#666">Ministry of Agriculture</text>
+    
+    <rect x="820" y="100" width="280" height="60" fill="#fff" stroke="#2E86AB" stroke-width="2" rx="5"/>
+    <text x="960" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Wheat Production</text>
+    <text x="960" y="145" font-size="12" text-anchor="middle" fill="#666">Ministry of Agriculture</text>
+    
+    <!-- Arrows down -->
+    <line x1="240" y1="160" x2="240" y2="210" stroke="#2E86AB" stroke-width="2" marker-end="url(#arrowblue)"/>
+    <line x1="600" y1="160" x2="600" y2="210" stroke="#2E86AB" stroke-width="2" marker-end="url(#arrowblue)"/>
+    <line x1="960" y1="160" x2="960" y2="210" stroke="#2E86AB" stroke-width="2" marker-end="url(#arrowblue)"/>
+    
+    <!-- Layer 2: Data Integration -->
+    <rect x="50" y="210" width="1100" height="100" fill="#fff5e6" stroke="#FF9F1C" stroke-width="2" rx="10"/>
+    <text x="600" y="235" font-size="18" font-weight="bold" text-anchor="middle" fill="#FF9F1C">
+      Layer 2: Data Integration &amp; Cleaning
+    </text>
+    
+    <rect x="250" y="250" width="700" height="50" fill="#fff" stroke="#FF9F1C" stroke-width="2" rx="5"/>
+    <text x="600" y="272" font-size="14" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Unified Dataset (880 rows)</text>
+    <text x="600" y="290" font-size="12" text-anchor="middle" fill="#666">20 Districts | 1970-2017 | Rainfall, Rice, Wheat Production</text>
+    
+    <!-- Arrow down -->
+    <line x1="600" y1="310" x2="600" y2="350" stroke="#FF9F1C" stroke-width="3" marker-end="url(#arroworange)"/>
+    
+    <!-- Layer 3: User Interface -->
+    <rect x="50" y="350" width="350" height="120" fill="#e8f5e9" stroke="#06A77D" stroke-width="2" rx="10"/>
+    <text x="225" y="375" font-size="18" font-weight="bold" text-anchor="middle" fill="#06A77D">
+      Layer 3: User Interface
+    </text>
+    
+    <rect x="100" y="390" width="250" height="60" fill="#fff" stroke="#06A77D" stroke-width="2" rx="5"/>
+    <text x="225" y="415" font-size="14" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Streamlit Web App</text>
+    <text x="225" y="435" font-size="11" text-anchor="middle" fill="#666">Natural Language Input</text>
+    
+    <!-- Arrow right -->
+    <line x1="400" y1="420" x2="480" y2="420" stroke="#06A77D" stroke-width="3" marker-end="url(#arrowgreen)"/>
+    <text x="440" y="410" font-size="11" text-anchor="middle" fill="#666">User Question</text>
+    
+    <!-- Layer 4: Query Engine (CENTER) -->
+    <rect x="480" y="350" width="380" height="280" fill="#f3e5f5" stroke="#8B5CF6" stroke-width="3" rx="10"/>
+    <text x="670" y="375" font-size="18" font-weight="bold" text-anchor="middle" fill="#8B5CF6">
+      Layer 4: Hybrid Query Engine
+    </text>
+    
+    <!-- Step 1: Parser -->
+    <rect x="510" y="390" width="320" height="65" fill="#fff" stroke="#8B5CF6" stroke-width="2" rx="5"/>
+    <text x="670" y="410" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Step 1: Rule-Based Parser</text>
+    <text x="670" y="428" font-size="11" text-anchor="middle" fill="#666">Regex extraction:</text>
+    <text x="670" y="443" font-size="10" text-anchor="middle" fill="#666">Column | Operation | Year | Filters</text>
+    
+    <!-- Arrow down -->
+    <line x1="670" y1="455" x2="670" y2="475" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrowpurple)"/>
+    
+    <!-- Step 2: Pandas -->
+    <rect x="510" y="475" width="320" height="65" fill="#fff" stroke="#8B5CF6" stroke-width="2" rx="5"/>
+    <text x="670" y="495" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Step 2: Pandas Query Engine</text>
+    <text x="670" y="513" font-size="11" text-anchor="middle" fill="#666">Execute deterministic queries</text>
+    <text x="670" y="528" font-size="10" text-anchor="middle" fill="#666">df[df['year'] == 2007].max()</text>
+    
+    <!-- Arrow down -->
+    <line x1="670" y1="540" x2="670" y2="560" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrowpurple)"/>
+    
+    <!-- Step 3: LLM -->
+    <rect x="510" y="560" width="320" height="60" fill="#fff" stroke="#8B5CF6" stroke-width="2" rx="5"/>
+    <text x="670" y="580" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Step 3: LLM Formatter (Llama3)</text>
+    <text x="670" y="598" font-size="11" text-anchor="middle" fill="#666">Natural language response</text>
+    <text x="670" y="613" font-size="10" text-anchor="middle" fill="#666">via Ollama (local, privacy-first)</text>
+    
+    <!-- Arrow left back to UI -->
+    <line x1="480" y1="590" x2="400" y2="590" stroke="#8B5CF6" stroke-width="3" marker-end="url(#arrowpurple)"/>
+    <text x="440" y="580" font-size="11" text-anchor="middle" fill="#666">Formatted Answer</text>
+    
+    <!-- Layer 5: Output (right side) -->
+    <rect x="880" y="350" width="270" height="280" fill="#ffebee" stroke="#E63946" stroke-width="2" rx="10"/>
+    <text x="1015" y="375" font-size="18" font-weight="bold" text-anchor="middle" fill="#E63946">
+      Layer 5: Multi-Layer Output
+    </text>
+    
+    <!-- Output boxes -->
+    <rect x="910" y="395" width="210" height="50" fill="#fff" stroke="#E63946" stroke-width="2" rx="5"/>
+    <text x="1015" y="417" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Natural Language Answer</text>
+    <text x="1015" y="433" font-size="10" text-anchor="middle" fill="#666">Formatted by LLM</text>
+    
+    <rect x="910" y="460" width="210" height="50" fill="#fff" stroke="#E63946" stroke-width="2" rx="5"/>
+    <text x="1015" y="482" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Interactive Visualization</text>
+    <text x="1015" y="498" font-size="10" text-anchor="middle" fill="#666">Plotly Charts</text>
+    
+    <rect x="910" y="525" width="210" height="50" fill="#fff" stroke="#E63946" stroke-width="2" rx="5"/>
+    <text x="1015" y="547" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">Raw Data + Code</text>
+    <text x="1015" y="563" font-size="10" text-anchor="middle" fill="#666">Full Traceability</text>
+    
+    <!-- Arrow from query engine to output -->
+    <line x1="860" y1="520" x2="880" y2="520" stroke="#E63946" stroke-width="3" marker-end="url(#arrowred)"/>
+    
+    <!-- Key Features boxes at bottom -->
+    <rect x="50" y="660" width="350" height="120" fill="#f0f0f0" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="225" y="685" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">
+      ✅ Key Features
+    </text>
+    <text x="70" y="710" font-size="12" fill="#333">• Accuracy: Deterministic pandas queries</text>
+    <text x="70" y="730" font-size="12" fill="#333">• Traceability: Shows exact code executed</text>
+    <text x="70" y="750" font-size="12" fill="#333">• Privacy: Local LLM, no external APIs</text>
+    <text x="70" y="770" font-size="12" fill="#333">• Interactive: Plotly visualizations</text>
+    
+    <!-- Tech Stack -->
+    <rect x="430" y="660" width="340" height="120" fill="#f0f0f0" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="600" y="685" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">
+      🛠️ Tech Stack
+    </text>
+    <text x="450" y="710" font-size="12" fill="#333">• Frontend: Streamlit</text>
+    <text x="450" y="730" font-size="12" fill="#333">• Data Processing: Pandas</text>
+    <text x="450" y="750" font-size="12" fill="#333">• LLM: Llama3 via Ollama</text>
+    <text x="450" y="770" font-size="12" fill="#333">• Visualization: Plotly</text>
+    
+    <!-- Scalability -->
+    <rect x="800" y="660" width="350" height="120" fill="#f0f0f0" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="975" y="685" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">
+      🚀 Scalability
+    </text>
+    <text x="820" y="710" font-size="12" fill="#333">• Current: Punjab (20 districts, 880 rows)</text>
+    <text x="820" y="730" font-size="12" fill="#333">• Future: All Indian states</text>
+    <text x="820" y="750" font-size="12" fill="#333">• API Integration: Real-time data.gov.in</text>
+    <text x="820" y="770" font-size="12" fill="#333">• Analytics: Correlation analysis</text>
+    
+    <!-- Arrow markers -->
+    <defs>
+      <marker id="arrowblue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#2E86AB" />
+      </marker>
+      <marker id="arroworange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#FF9F1C" />
+      </marker>
+      <marker id="arrowgreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#06A77D" />
+      </marker>
+      <marker id="arrowpurple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#8B5CF6" />
+      </marker>
+      <marker id="arrowred" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#E63946" />
+      </marker>
+    </defs>
+  </svg>
