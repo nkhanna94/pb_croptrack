@@ -266,6 +266,9 @@ LLM: "Rice production showed a steady increase from 2000 to 2010..."
 punjab-agriculture-qa/
 ├── app.py                              # Main Streamlit application
 ├── data/
+    └── Production_Rice_1.csv   # Rice production dataset
+    └── Production_Wheat_1.csv   # Wheat production dataset
+    └── AnnualAverageRainFall.csv   # Rainfall dataset
 │   └── Punjab_Agri_Rainfall_Cleaned.csv   # Integrated dataset
 ├── architecture.png                    # System architecture diagram
 ├── requirements.txt                    # Python dependencies
@@ -390,12 +393,12 @@ punjab-agriculture-qa/
 
 ## 👤 Author
 
-**[Niharika Khanna]**  
+**Niharika Khanna**  
 
 
-📧 Email: your.email@example.com  
-🔗 LinkedIn: [nkhanna94](#https://linkedin.com/in/nkhanna94)  
-💻 GitHub: [nkhanna94](#https://github.com/nkhanna94)
+📧 Email: khanna.niharika09@gmail.com  
+🔗 LinkedIn: [nkhanna94](https://linkedin.com/in/nkhanna94)  
+💻 GitHub: [nkhanna94](https://github.com/nkhanna94)
 
 ---
 
