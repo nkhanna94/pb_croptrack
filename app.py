@@ -1,8 +1,13 @@
 import streamlit as st
 import pandas as pd
-from ollama import chat
 import re
 import plotly.express as px
+import os
+from dotenv import load_dotenv
+from groq import Groq
+
+load_dotenv() 
+api_key = os.environ.get("GROQ_API_KEY")
 
 # Page config
 st.set_page_config(
@@ -10,6 +15,13 @@ st.set_page_config(
     page_icon="🌾",
     layout="wide"
 )
+
+# Initialize Groq client
+
+if not api_key:
+    st.error("⚠️ GROQ_API_KEY not found. Add it to Render environment variables.")
+else:
+    client = Groq(api_key=api_key)
 
 # Load dataset
 @st.cache_data
@@ -20,7 +32,7 @@ def load_data():
 
 df = load_data()
 
-# Parse and query function (ENHANCED)
+# Parse and query function
 def parse_and_query(question):
     """Parse question and execute query using rules."""
     q = question.lower()
@@ -65,9 +77,8 @@ def parse_and_query(question):
     
     # Execute query
     try:
-        viz_data = None  # For visualizations
+        viz_data = None
         
-        # Filter by year if specified
         if year and op != 'trend':
             filtered = df[df['year'] == year]
             if filtered.empty:
@@ -75,7 +86,6 @@ def parse_and_query(question):
         else:
             filtered = df
         
-        # Execute operation
         if op == 'min':
             idx = filtered[col].idxmin()
             result = filtered.loc[idx]
@@ -89,7 +99,6 @@ def parse_and_query(question):
         elif op == 'avg':
             result = filtered[col].mean()
             code = f"df[df['year'] == {year}]['{col}'].mean()"
-            # Add visualization for average by district
             if year:
                 viz_df = filtered.groupby('district')[col].mean().reset_index()
                 viz_data = {
@@ -103,7 +112,6 @@ def parse_and_query(question):
             code = f"df[df['year'] == {year}]['{col}'].sum()"
             
         elif op == 'trend':
-            # Handle year ranges
             if year_range:
                 start_year = int(year_range.group(1))
                 end_year = int(year_range.group(2))
@@ -127,7 +135,6 @@ def parse_and_query(question):
         elif op == 'top':
             result = filtered.nlargest(top_n, col)[['district', 'year', col]]
             code = f"df[df['year'] == {year}].nlargest({top_n}, '{col}')"
-            # Add visualization
             viz_data = {
                 'data': result,
                 'viz_type': 'bar',
@@ -135,12 +142,10 @@ def parse_and_query(question):
             }
             
         elif op == 'compare':
-            # Extract district names
             available_districts = df['district'].unique()
             districts = [d for d in available_districts if d.lower() in q]
             
             if len(districts) >= 2:
-                # Handle year range for comparison
                 if year_range:
                     start_year = int(year_range.group(1))
                     end_year = int(year_range.group(2))
@@ -153,14 +158,19 @@ def parse_and_query(question):
                 
                 result = filtered[filtered['district'].isin(districts[:2])][['district', 'year', col]]
                 
-                # Add visualization
-                viz_data = {
-                    'data': result,
-                    'viz_type': 'compare',
-                    'title': f'{col.replace("_", " ").title()} Comparison: {districts[0]} vs {districts[1]}'
-                }
+                if len(result['year'].unique()) > 1:
+                    viz_data = {
+                        'data': result,
+                        'viz_type': 'line_compare',
+                        'title': f'{col.replace("_", " ").title()} Comparison: {districts[0]} vs {districts[1]}'
+                    }
+                else:
+                    viz_data = {
+                        'data': result,
+                        'viz_type': 'compare',
+                        'title': f'{col.replace("_", " ").title()} Comparison: {districts[0]} vs {districts[1]}'
+                    }
             else:
-                # Better error message
                 found_districts = ', '.join([d for d in available_districts if any(word in d.lower() for word in q.split())])
                 if found_districts:
                     return None, None, f"Found only one district: {found_districts}. Available districts: {', '.join(available_districts[:5])}...", None
@@ -180,7 +190,6 @@ def create_visualization(result, viz_data, col):
     if viz_data is None:
         return None
     
-    # Extract metadata from dictionary
     viz_type = viz_data.get('viz_type')
     title = viz_data.get('title', 'Data Visualization')
     data = viz_data.get('data')
@@ -189,7 +198,6 @@ def create_visualization(result, viz_data, col):
         return None
     
     if viz_type == 'line':
-        # Trend line chart
         fig = px.line(
             data, 
             x='year', 
@@ -201,7 +209,6 @@ def create_visualization(result, viz_data, col):
         fig.update_traces(line_color='#2E86AB', marker=dict(size=8))
         
     elif viz_type == 'bar':
-        # Bar chart for top N or averages
         if 'district' in data.columns:
             fig = px.bar(
                 data,
@@ -223,7 +230,6 @@ def create_visualization(result, viz_data, col):
         fig.update_layout(showlegend=False)
         
     elif viz_type == 'compare':
-        # Grouped bar for comparison
         fig = px.bar(
             data,
             x='district',
@@ -233,6 +239,19 @@ def create_visualization(result, viz_data, col):
             barmode='group',
             labels={'district': 'District', col: col.replace('_', ' ').title()}
         )
+        
+    elif viz_type == 'line_compare':
+        fig = px.line(
+            data,
+            x='year',
+            y=col,
+            color='district',
+            title=title,
+            markers=True,
+            labels={'year': 'Year', col: col.replace('_', ' ').title(), 'district': 'District'}
+        )
+        fig.update_traces(marker=dict(size=8))
+        
     else:
         return None
     
@@ -245,7 +264,10 @@ def create_visualization(result, viz_data, col):
     return fig
 
 def format_with_llm(question, result, code):
-    """Use LLM only for formatting the answer nicely."""
+    """Use Groq to format the answer nicely."""
+    
+    if not client:
+        return f"ANSWER: Based on the data analysis\n\nEVIDENCE:\n{result}\n\nSOURCE: Punjab_Agri_Rainfall_Cleaned.csv"
     
     if isinstance(result, pd.Series):
         result_str = f"District: {result['district']}, Year: {result['year']}, Value: {result.to_dict()}"
@@ -254,10 +276,13 @@ def format_with_llm(question, result, code):
     else:
         result_str = f"{result:.2f}"
     
-    messages = [
-        {
-            "role": "system",
-            "content": """You format data analysis results into clear answers.
+    try:
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """You format data analysis results into clear answers.
 
 Structure your response as:
 
@@ -267,22 +292,21 @@ EVIDENCE:
 [The specific data that supports this]
 
 SOURCE: Punjab_Agri_Rainfall_Cleaned.csv from data.gov.in Ministry of Agriculture"""
-        },
-        {
-            "role": "user",
-            "content": f"Question: {question}\n\nData: {result_str}\n\nCode: {code}"
-        }
-    ]
-    
-    try:
-        response = chat(model="llama3:latest", messages=messages)
-        return response['message']['content']
+                },
+                {
+                    "role": "user",
+                    "content": f"Question: {question}\n\nData: {result_str}\n\nCode: {code}"
+                }
+            ],
+            temperature=0.3,
+            max_tokens=500
+        )
+        return completion.choices[0].message.content
     except:
-        # Fallback if LLM fails
         return f"ANSWER: Based on the data analysis\n\nEVIDENCE:\n{result_str}\n\nSOURCE: Punjab_Agri_Rainfall_Cleaned.csv"
 
 # Streamlit UI
-st.title("🌾 Punjab Agriculture Q&A System")
+st.title("🌾 PB_CropTrack : Punjab Agriculture Q&A System")
 st.markdown("### Intelligent Query System over data.gov.in Agricultural Data")
 
 # Sidebar
@@ -310,15 +334,13 @@ col1, col2 = st.columns([2, 1])
 with col1:
     st.subheader("Ask Your Question")
     
-    # Sample questions with categories
-    st.markdown("**Sample Questions:**")
     sample_questions = [
         "Which district received the highest rainfall in 2007?",
         "What was the average rice production in 2000?",
         "Which district had the lowest wheat production in 1995?",
         "Show rice production trend from 2000 to 2010",
         "Show top 5 districts by rice production in 2010",
-        "Compare rainfall between Amritsar and Ludhiana in 2005"
+        "Compare rainfall between Amritsar and Ludhiana from 2001 to 2010"
     ]
     
     selected_sample = st.selectbox(
@@ -341,7 +363,6 @@ with col1:
 with col2:
     st.subheader("Quick Stats")
     
-    # Show some quick insights
     latest_year = df['year'].max()
     latest_data = df[df['year'] == latest_year]
     
@@ -367,7 +388,6 @@ if ask_button and question:
         if error:
             st.error(f"❌ {error}")
         else:
-            # Determine column for visualization
             q = question.lower()
             if 'rainfall' in q:
                 col = 'rainfall'
@@ -378,10 +398,8 @@ if ask_button and question:
             else:
                 col = None
             
-            # Create visualization if applicable
             fig = create_visualization(result, viz_data, col) if col else None
             
-            # Display results in tabs
             if fig:
                 tab1, tab2, tab3, tab4 = st.tabs(["📝 Answer", "📊 Visualization", "📋 Data", "💻 Code"])
             else:
@@ -422,6 +440,6 @@ st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: gray;'>
     <p>Built for Project Samarth | Data source: data.gov.in | Ministry of Agriculture & Farmers Welfare</p>
-    <p>🔒 Privacy-First: All processing done locally with Ollama | No external API calls</p>
+    <p>🔒 Powered by Groq (Llama 3.1) | Fast & Efficient</p>
 </div>
 """, unsafe_allow_html=True)
